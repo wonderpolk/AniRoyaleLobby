@@ -23,7 +23,8 @@ src/
 1. Install [Rojo](https://rojo.space/) if you want to sync the project into Roblox Studio.
 2. Run `rojo serve` from this repository.
 3. Open Roblox Studio and connect the Rojo plugin.
-4. Press Play with multiple test clients to verify the lobby counter and countdown.
+4. Sync safely: the project uses Rojo `$ignoreUnknownInstances` settings so existing Studio-only instances are preserved while these lobby folders are added.
+5. Press Play with multiple test clients to verify the lobby counter and countdown.
 
 ## Next Milestones
 

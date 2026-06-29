@@ -2,20 +2,28 @@
   "name": "AniRoyaleLobby",
   "tree": {
     "$className": "DataModel",
+    "$ignoreUnknownInstances": true,
     "ReplicatedStorage": {
+      "$ignoreUnknownInstances": true,
       "Shared": {
-        "$path": "src/shared"
+        "$path": "src/shared",
+        "$ignoreUnknownInstances": true
       }
     },
     "ServerScriptService": {
+      "$ignoreUnknownInstances": true,
       "Server": {
-        "$path": "src/server"
+        "$path": "src/server",
+        "$ignoreUnknownInstances": true
       }
     },
     "StarterPlayer": {
+      "$ignoreUnknownInstances": true,
       "StarterPlayerScripts": {
+        "$ignoreUnknownInstances": true,
         "Client": {
-          "$path": "src/client"
+          "$path": "src/client",
+          "$ignoreUnknownInstances": true
         }
       }
     }

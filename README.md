@@ -1,6 +1,6 @@
 # Ani Royale Lobby
 
-Lobby-only Roblox foundation for Ani Royale. In this project, "lobby" means the social hub where players party up in the lobby, open the shop, buy/equip characters and skins, adjust settings, and view profile stats. This repository is intentionally focused on those lobby hub systems only.
+Lobby-only Roblox foundation for Ani Royale. In this project, "lobby" means the social hub where players party up, open the shop, buy/equip characters and skins, adjust settings, and view profile stats. This repository is intentionally focused on those lobby hub systems only.
 
 ## What Is Included
 

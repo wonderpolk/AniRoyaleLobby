@@ -1,3 +1,4 @@
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Services = {
@@ -8,6 +9,7 @@ local Services = {
 	StoreService = require(script.Services.StoreService),
 	SettingsService = require(script.Services.SettingsService),
 	StatsService = require(script.Services.StatsService),
+	PartyService = require(script.Services.PartyService),
 }
 
 local REMOTE_NAMES = {
@@ -18,6 +20,11 @@ local REMOTE_NAMES = {
 	"RequestSetSetting",
 	"RequestGetLobbyData",
 	"RequestGetProfileStats",
+	"RequestCreateParty",
+	"RequestInviteToParty",
+	"RequestAcceptPartyInvite",
+	"RequestLeaveParty",
+	"RequestGetPartyData",
 }
 
 local function getOrCreateFolder(parent, name)
@@ -103,11 +110,46 @@ local function connectRemotes(remotes)
 			Store = Services.StoreService:GetStoreData(player),
 			Settings = Services.SettingsService:GetSettings(player),
 			EquippedCharacter = Services.CharacterService:GetEquippedCharacter(player),
+			Party = Services.PartyService:GetPartyData(player),
 		})
 	end
 
 	remotes.RequestGetProfileStats.OnServerInvoke = function(player)
 		return makeResult(true, "Profile stats loaded.", Services.StatsService:GetFormattedStats(player))
+	end
+
+	remotes.RequestCreateParty.OnServerInvoke = function(player)
+		local success, message = Services.PartyService:CreateParty(player)
+		return makeResult(success, message, Services.PartyService:GetPartyData(player))
+	end
+
+	remotes.RequestInviteToParty.OnServerInvoke = function(player, targetUserId)
+		if type(targetUserId) ~= "number" then
+			return makeResult(false, "Invalid player.")
+		end
+
+		local targetPlayer = Players:GetPlayerByUserId(targetUserId)
+		local success, message = Services.PartyService:InvitePlayer(player, targetPlayer)
+		return makeResult(success, message, Services.PartyService:GetPartyData(player))
+	end
+
+	remotes.RequestAcceptPartyInvite.OnServerInvoke = function(player, leaderUserId)
+		if type(leaderUserId) ~= "number" then
+			return makeResult(false, "Invalid invite.")
+		end
+
+		local leaderPlayer = Players:GetPlayerByUserId(leaderUserId)
+		local success, message = Services.PartyService:AcceptInvite(player, leaderPlayer)
+		return makeResult(success, message, Services.PartyService:GetPartyData(player))
+	end
+
+	remotes.RequestLeaveParty.OnServerInvoke = function(player)
+		local success, message = Services.PartyService:LeaveParty(player)
+		return makeResult(success, message, Services.PartyService:GetPartyData(player))
+	end
+
+	remotes.RequestGetPartyData.OnServerInvoke = function(player)
+		return makeResult(true, "Party data loaded.", Services.PartyService:GetPartyData(player))
 	end
 end
 
@@ -118,6 +160,7 @@ Services.SkinService:Init(Services)
 Services.StoreService:Init(Services)
 Services.SettingsService:Init(Services)
 Services.StatsService:Init(Services)
+Services.PartyService:Init(Services)
 
 local shared = ReplicatedStorage:WaitForChild("Shared")
 local remotesFolder = getOrCreateFolder(shared, "Remotes")
@@ -129,5 +172,5 @@ end
 
 connectRemotes(remotes)
 
--- Future lobby UI should call these RemoteFunctions for shop, skin, settings, and profile screens.
+-- Future lobby UI should call these RemoteFunctions for party, shop, skin, settings, and profile screens.
 -- These are request/response handlers for the calling player, not broadcast events.

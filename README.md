@@ -4,8 +4,8 @@ Lobby-only Roblox foundation for Ani Royale. In this project, "lobby" means the 
 
 ## What Is Included
 
-- Modular server services for player data, currency, store purchases, character ownership, skin ownership, settings, and profile stats for the lobby hub.
-- Shared configs for starter data, characters, skins, store placement, and allowed settings.
+- Modular server services for player data, currency, store purchases, character ownership, skin ownership, settings, party invites, and profile stats for the lobby hub.
+- Shared configs for starter data, characters, skins, store placement, party size, and allowed settings.
 - Safe UI-ready `RemoteFunction` setup under `ReplicatedStorage.Shared.Remotes` for request/response UI actions, not server broadcasts.
 - Rojo mapping that preserves unknown Studio instances while syncing source-controlled lobby folders.
 - Wally dependency entry for `DataService`, kept behind `PlayerDataService` so the data layer can be swapped later.
@@ -23,7 +23,8 @@ ServerScriptService
         ├── CharacterService.lua
         ├── SkinService.lua
         ├── SettingsService.lua
-        └── StatsService.lua
+        ├── StatsService.lua
+        └── PartyService.lua
 
 ReplicatedStorage
 ├── Packages
@@ -33,7 +34,8 @@ ReplicatedStorage
     │   ├── CharacterConfig.lua
     │   ├── SkinConfig.lua
     │   ├── StoreConfig.lua
-    │   └── SettingsConfig.lua
+    │   ├── SettingsConfig.lua
+    │   └── PartyConfig.lua
     ├── Remotes
     └── Types.lua
 ```
@@ -49,7 +51,7 @@ ReplicatedStorage
 
 ## Future UI Remote Access
 
-Lobby UI should call request/response `RemoteFunction`s when a player opens the shop, changes skins, changes settings, or opens their profile. These remotes are not broadcast systems; the server only responds to the requesting player. The UI should wait for runtime-created remotes before invoking them:
+Lobby UI should call request/response `RemoteFunction`s when a player opens the shop, creates/leaves a party, invites lobby players, changes skins, changes settings, or opens their profile. These remotes are not broadcast systems; the server only responds to the requesting player. The UI should wait for runtime-created remotes before invoking them:
 
 ```lua
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -58,19 +60,25 @@ local Remotes = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Remotes")
 local RequestGetLobbyData = Remotes:WaitForChild("RequestGetLobbyData")
 local RequestBuyCharacter = Remotes:WaitForChild("RequestBuyCharacter")
 local RequestSetSetting = Remotes:WaitForChild("RequestSetSetting")
+local RequestCreateParty = Remotes:WaitForChild("RequestCreateParty")
+local RequestInviteToParty = Remotes:WaitForChild("RequestInviteToParty")
+local RequestAcceptPartyInvite = Remotes:WaitForChild("RequestAcceptPartyInvite")
+local RequestLeaveParty = Remotes:WaitForChild("RequestLeaveParty")
+local RequestGetPartyData = Remotes:WaitForChild("RequestGetPartyData")
 local RequestGetProfileStats = Remotes:WaitForChild("RequestGetProfileStats")
 ```
 
-Clients should only send requested names or setting values, such as `characterName`, `skinName`, `settingName`, and `value`. The server owns all prices, ownership checks, currency edits, equipped skin changes, and stats formatting.
+Clients should only send requested names, player IDs, or setting values, such as `characterName`, `skinName`, `targetUserId`, `settingName`, and `value`. The server owns all prices, ownership checks, currency edits, equipped skin changes, and stats formatting.
 
 ## Studio Test Checklist
 
 - Run `wally install`, then `rojo serve`, then connect Rojo in Roblox Studio.
-- Test lobby data with `RequestGetLobbyData:InvokeServer()` and confirm it returns store, settings, and equipped character data.
+- Test lobby data with `RequestGetLobbyData:InvokeServer()` and confirm it returns store, settings, equipped character, and party data.
 - Test buying a character with `RequestBuyCharacter:InvokeServer("Naruto")`; the server should decide the real price from `CharacterConfig` and reject the purchase if the player lacks coins.
 - Test changing a setting with `RequestSetSetting:InvokeServer("Music", false)` and confirm invalid setting names or non-boolean values are rejected.
+- Test party data with `RequestCreateParty:InvokeServer()`, `RequestInviteToParty:InvokeServer(targetUserId)`, and `RequestGetPartyData:InvokeServer()`.
 - Test profile stats with `RequestGetProfileStats:InvokeServer()` and confirm the values are formatted for UI display.
 
 ## Not Built Yet
 
-Combat, damage, stamina, abilities, queues, teleporting, battle royale rounds, live matches, and live match stat tracking are intentionally not included yet. Party-up support can be added as a lobby-only service later without adding queues or match launch logic.
+Combat, damage, stamina, abilities, queues, teleporting, battle royale rounds, live matches, and live match stat tracking are intentionally not included yet. The party service is lobby-only and does not include queues or match launch logic.

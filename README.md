@@ -26,6 +26,7 @@ ServerScriptService
         └── StatsService.lua
 
 ReplicatedStorage
+├── Packages
 └── Shared
     ├── Configs
     │   ├── DataTemplate.lua
@@ -39,8 +40,8 @@ ReplicatedStorage
 
 ## Setup
 
-1. Install Wally from <https://wally.run/>.
-2. Install Rojo from <https://rojo.space/>.
+1. Install Wally from <https://wally.run/> or run `rokit install` if using the checked-in Rokit toolchain.
+2. Install Rojo from <https://rojo.space/> or use the Rokit-managed Rojo binary.
 3. Run `wally install` from this repository to install `DataService` into `Packages`.
 4. Run `rojo serve` from this repository.
 5. Open Roblox Studio, open the Rojo plugin, and connect to the running Rojo server.

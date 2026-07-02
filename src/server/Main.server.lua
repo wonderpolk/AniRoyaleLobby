@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Services = {
+	LobbySpawnService = require(script.Services.LobbySpawnService),
 	PlayerDataService = require(script.Services.PlayerDataService),
 	CurrencyService = require(script.Services.CurrencyService),
 	DrifterService = require(script.Services.DrifterService),
@@ -9,7 +10,6 @@ local Services = {
 	SettingsService = require(script.Services.SettingsService),
 	StatsService = require(script.Services.StatsService),
 	PartyService = require(script.Services.PartyService),
-	LobbySpawnService = require(script.Services.LobbySpawnService),
 }
 
 local REMOTE_NAMES = {

@@ -1,6 +1,8 @@
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
+Players.CharacterAutoLoads = false
+
 local LOBBY_SPAWN_LOCATION_NAME = "LobbySpawnLocation"
 local SPAWN_MARKER_NAMES = { "LobbySpawn", "LobbySlot", "SpawnSlot", "SpawnPoint" }
 
@@ -54,15 +56,7 @@ local function findLobbyRoom()
 end
 
 local function getLobbyRoom()
-	local startTime = os.clock()
-	local lobbyRoom = findLobbyRoom()
-
-	while not lobbyRoom and os.clock() - startTime < 30 do
-		task.wait(0.25)
-		lobbyRoom = findLobbyRoom()
-	end
-
-	return lobbyRoom
+	return findLobbyRoom()
 end
 
 local function findSpawnPartInLobby(lobbyRoom)
@@ -104,18 +98,6 @@ local function getSpawnPart()
 	end
 
 	local spawnPart = findSpawnPartInLobby(lobbyRoom)
-	if spawnPart then
-		return spawnPart
-	end
-
-	for _, spawnName in ipairs(LobbySpawnService.SpawnNames) do
-		local directSpawn = lobbyRoom:WaitForChild(spawnName, 5)
-		if directSpawn and directSpawn:IsA("BasePart") then
-			return directSpawn
-		end
-	end
-
-	spawnPart = findSpawnPartInLobby(lobbyRoom)
 	if spawnPart then
 		return spawnPart
 	end
@@ -164,10 +146,11 @@ local function assignRespawnLocation(player)
 	local spawnLocation = getOrCreateSpawnLocation()
 	if not spawnLocation then
 		warn("LobbySpawnService could not create a lobby SpawnLocation.")
-		return
+		return false
 	end
 
 	player.RespawnLocation = spawnLocation
+	return true
 end
 
 local function freezeCharacter(character)
@@ -222,9 +205,7 @@ function LobbySpawnService:_setupCharacter(character)
 end
 
 function LobbySpawnService:_setupPlayer(player)
-	task.spawn(function()
-		assignRespawnLocation(player)
-	end)
+	assignRespawnLocation(player)
 
 	player.CharacterAdded:Connect(function(character)
 		assignRespawnLocation(player)
@@ -232,8 +213,9 @@ function LobbySpawnService:_setupPlayer(player)
 	end)
 
 	if player.Character then
-		assignRespawnLocation(player)
 		self:_setupCharacter(player.Character)
+	else
+		player:LoadCharacter()
 	end
 end
 

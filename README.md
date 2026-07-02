@@ -64,7 +64,7 @@ ReplicatedStorage
 Create these parts in Studio under `Workspace.LobbyRoom` when possible:
 
 - `LobbyCamera`: a part placed where the lobby camera should look from. The client locks the camera to this part while the player is in the lobby.
-- `Member1`: a part placed where the first lobby player should stand. The server creates an invisible `LobbySpawnLocation` on top of this part, moves players there, and freezes their movement for the lobby view. `Member1` is safe to use; the number is not a problem. The service also supports `SlotOne` or `Slot1` if you prefer that naming later. Direct placement under `Workspace.LobbyRoom.Member1` is the cleanest setup.
+- `Member1`: a part placed where the first lobby player should stand. The server creates an invisible `LobbySpawnLocation` on top of this part, moves players there, and freezes their movement for the lobby view. `Member1` is safe to use; the number is not a problem. The service also supports `SlotOne` or `Slot1` if you prefer that naming later. You can also put a `StringValue` named `LobbySpawn`, `LobbySlot`, `SpawnSlot`, or `SpawnPoint` inside any spawn part to mark it as the lobby spawn. Direct placement under `Workspace.LobbyRoom.Member1` is still the cleanest setup.
 
 If `LobbyCamera` contains a `StringValue` named `CamPart`, the client will try to use the part named by that value first. If it cannot find that named part, it uses `LobbyCamera` itself.
 

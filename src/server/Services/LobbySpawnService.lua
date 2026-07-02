@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
 local LOBBY_SPAWN_LOCATION_NAME = "LobbySpawnLocation"
+local SPAWN_MARKER_NAMES = { "LobbySpawn", "LobbySlot", "SpawnSlot", "SpawnPoint" }
 
 local LobbySpawnService = {}
 LobbySpawnService.SpawnNames = { "Member1", "member1", "SlotOne", "slotone", "Slot1", "slot1" }
@@ -16,6 +17,31 @@ local function isSpawnName(name)
 	end
 
 	return false
+end
+
+local function hasSpawnMarker(part)
+	for _, markerName in ipairs(SPAWN_MARKER_NAMES) do
+		local marker = part:FindFirstChild(markerName)
+		if marker and marker:IsA("StringValue") then
+			return true
+		end
+	end
+
+	return false
+end
+
+local function findMarkedSpawnPart(parent)
+	if parent:IsA("BasePart") and hasSpawnMarker(parent) then
+		return parent
+	end
+
+	for _, descendant in ipairs(parent:GetDescendants()) do
+		if descendant:IsA("BasePart") and hasSpawnMarker(descendant) then
+			return descendant
+		end
+	end
+
+	return nil
 end
 
 local function findLobbyRoom()
@@ -40,6 +66,11 @@ local function getLobbyRoom()
 end
 
 local function findSpawnPartInLobby(lobbyRoom)
+	local markedSpawnPart = findMarkedSpawnPart(lobbyRoom)
+	if markedSpawnPart then
+		return markedSpawnPart
+	end
+
 	for _, spawnName in ipairs(LobbySpawnService.SpawnNames) do
 		local directSpawn = lobbyRoom:FindFirstChild(spawnName)
 		if directSpawn and directSpawn:IsA("BasePart") then
@@ -62,6 +93,11 @@ local function findSpawnPartInLobby(lobbyRoom)
 end
 
 local function getSpawnPart()
+	local markedWorkspaceSpawn = findMarkedSpawnPart(Workspace)
+	if markedWorkspaceSpawn then
+		return markedWorkspaceSpawn
+	end
+
 	local lobbyRoom = getLobbyRoom()
 	if not lobbyRoom then
 		return nil
@@ -101,6 +137,10 @@ local function getOrCreateSpawnLocation()
 
 	local parent = spawnPart.Parent or Workspace
 	local spawnLocation = parent:FindFirstChild(LOBBY_SPAWN_LOCATION_NAME)
+	if spawnLocation and not spawnLocation:IsA("SpawnLocation") then
+		spawnLocation:Destroy()
+		spawnLocation = nil
+	end
 
 	if not spawnLocation then
 		spawnLocation = Instance.new("SpawnLocation")
@@ -115,7 +155,7 @@ local function getOrCreateSpawnLocation()
 	spawnLocation.Neutral = true
 	spawnLocation.Duration = 0
 	spawnLocation.Size = Vector3.new(4, 1, 4)
-	spawnLocation.CFrame = spawnPart.CFrame
+	spawnLocation.CFrame = spawnPart.CFrame * CFrame.new(0, (spawnPart.Size.Y / 2) + 0.5, 0)
 
 	return spawnLocation
 end
@@ -156,7 +196,7 @@ local function moveCharacterToLobby(character)
 		return
 	end
 
-	local spawnCFrame = spawnPart.CFrame + Vector3.new(0, 3, 0)
+	local spawnCFrame = spawnPart.CFrame * CFrame.new(0, (spawnPart.Size.Y / 2) + 3, 0)
 	character:PivotTo(spawnCFrame)
 	rootPart.AssemblyLinearVelocity = Vector3.zero
 	rootPart.AssemblyAngularVelocity = Vector3.zero

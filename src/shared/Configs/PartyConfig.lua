@@ -1,0 +1,3 @@
+return {
+	MaxMembers = 3,
+}

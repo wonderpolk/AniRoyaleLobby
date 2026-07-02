@@ -2,7 +2,19 @@ local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
 local LobbySpawnService = {}
-LobbySpawnService.SpawnNames = { "Member1", "member1" }
+LobbySpawnService.SpawnNames = { "Member1", "member1", "SlotOne", "slotone", "Slot1", "slot1" }
+
+local function isSpawnName(name)
+	local loweredName = string.lower(name)
+
+	for _, spawnName in ipairs(LobbySpawnService.SpawnNames) do
+		if loweredName == string.lower(spawnName) then
+			return true
+		end
+	end
+
+	return false
+end
 
 local function findLobbyRoom()
 	local directLobbyRoom = Workspace:FindFirstChild("LobbyRoom")
@@ -39,7 +51,7 @@ local function findSpawnPartInLobby(lobbyRoom)
 	end
 
 	for _, descendant in ipairs(lobbyRoom:GetDescendants()) do
-		if descendant:IsA("BasePart") and string.lower(descendant.Name) == "member1" then
+		if descendant:IsA("BasePart") and isSpawnName(descendant.Name) then
 			return descendant
 		end
 	end
@@ -71,7 +83,7 @@ local function getSpawnPart()
 	end
 
 	for _, descendant in ipairs(Workspace:GetDescendants()) do
-		if descendant:IsA("BasePart") and string.lower(descendant.Name) == "member1" then
+		if descendant:IsA("BasePart") and isSpawnName(descendant.Name) then
 			return descendant
 		end
 	end
@@ -116,6 +128,13 @@ function LobbySpawnService:_setupCharacter(character)
 	moveCharacterToLobby(character)
 
 	task.delay(0.25, function()
+		if character.Parent then
+			freezeCharacter(character)
+			moveCharacterToLobby(character)
+		end
+	end)
+
+	task.delay(1, function()
 		if character.Parent then
 			freezeCharacter(character)
 			moveCharacterToLobby(character)

@@ -153,6 +153,7 @@ local function connectRemotes(remotes)
 	end
 end
 
+Services.LobbySpawnService:Init()
 Services.PlayerDataService:Init()
 Services.CurrencyService:Init(Services)
 Services.DrifterService:Init(Services)
@@ -161,7 +162,6 @@ Services.StoreService:Init(Services)
 Services.SettingsService:Init(Services)
 Services.StatsService:Init(Services)
 Services.PartyService:Init(Services)
-Services.LobbySpawnService:Init()
 
 local shared = ReplicatedStorage:WaitForChild("Shared")
 local remotesFolder = getOrCreateFolder(shared, "Remotes")

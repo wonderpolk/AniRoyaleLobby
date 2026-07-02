@@ -1,63 +1,64 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local CharacterConfig = require(ReplicatedStorage.Shared.Configs.CharacterConfig)
+local DrifterConfig = require(ReplicatedStorage.Shared.Configs.DrifterConfig)
 local SkinConfig = require(ReplicatedStorage.Shared.Configs.SkinConfig)
 local StoreConfig = require(ReplicatedStorage.Shared.Configs.StoreConfig)
 
 local StoreService = {}
 StoreService.PlayerDataService = nil
-StoreService.CharacterService = nil
+StoreService.DrifterService = nil
 StoreService.SkinService = nil
 
 function StoreService:Init(services)
 	self.PlayerDataService = services.PlayerDataService
-	self.CharacterService = services.CharacterService
+	self.DrifterService = services.DrifterService
 	self.SkinService = services.SkinService
 end
 
-function StoreService:BuyCharacter(player, characterName)
-	return self.CharacterService:BuyCharacter(player, characterName)
+function StoreService:BuyDrifter(player, drifterName)
+	return self.DrifterService:BuyDrifter(player, drifterName)
 end
 
-function StoreService:BuySkin(player, characterName, skinName)
-	return self.SkinService:BuySkin(player, characterName, skinName)
+function StoreService:BuySkin(player, drifterName, skinName)
+	return self.SkinService:BuySkin(player, drifterName, skinName)
 end
 
 function StoreService:GetStoreData(player)
-	local characters = {}
-	for characterName, character in pairs(CharacterConfig) do
-		characters[characterName] = {
-			DisplayName = character.DisplayName,
-			Price = character.Price,
-			Currency = character.Currency,
-			Class = character.Class,
-			Rarity = character.Rarity,
-			Owned = self.CharacterService:OwnsCharacter(player, characterName),
-			Equipped = self.CharacterService:GetEquippedCharacter(player) == characterName,
+	local drifters = {}
+	for drifterName, drifter in pairs(DrifterConfig) do
+		drifters[drifterName] = {
+			DisplayName = drifter.DisplayName,
+			Price = drifter.Price,
+			Currency = drifter.Currency,
+			Class = drifter.Class,
+			Rarity = drifter.Rarity,
+			Owned = self.DrifterService:OwnsDrifter(player, drifterName),
+			Equipped = self.DrifterService:GetEquippedDrifter(player) == drifterName,
 		}
 	end
 
 	local skins = {}
-	for characterName, characterSkins in pairs(SkinConfig) do
-		skins[characterName] = {}
-		for skinName, skin in pairs(characterSkins) do
-			skins[characterName][skinName] = {
+	for drifterName, drifterSkins in pairs(SkinConfig) do
+		skins[drifterName] = {}
+		for skinName, skin in pairs(drifterSkins) do
+			skins[drifterName][skinName] = {
 				DisplayName = skin.DisplayName,
 				Price = skin.Price,
 				Currency = skin.Currency,
 				Rarity = skin.Rarity,
-				Owned = self.SkinService:OwnsSkin(player, characterName, skinName),
-				Equipped = self.SkinService:GetEquippedSkin(player, characterName) == skinName,
+				Owned = self.SkinService:OwnsSkin(player, drifterName, skinName),
+				Equipped = self.SkinService:GetEquippedSkin(player, drifterName) == skinName,
 			}
 		end
 	end
 
 	return {
-		Coins = self.PlayerDataService:Get(player, "Coins") or 0,
-		Gems = self.PlayerDataService:Get(player, "Gems") or 0,
-		FeaturedCharacters = StoreConfig.FeaturedCharacters,
+		Col = self.PlayerDataService:Get(player, "Col") or 0,
+		SeedShards = self.PlayerDataService:Get(player, "SeedShards") or 0,
+		DrifterTickets = self.PlayerDataService:Get(player, "DrifterTickets") or 0,
+		FeaturedDrifters = StoreConfig.FeaturedDrifters,
 		FeaturedSkins = StoreConfig.FeaturedSkins,
-		Characters = characters,
+		Drifters = drifters,
 		Skins = skins,
 	}
 end

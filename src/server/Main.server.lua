@@ -1,10 +1,9 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
 local Services = {
 	PlayerDataService = require(script.Services.PlayerDataService),
 	CurrencyService = require(script.Services.CurrencyService),
-	CharacterService = require(script.Services.CharacterService),
+	DrifterService = require(script.Services.DrifterService),
 	SkinService = require(script.Services.SkinService),
 	StoreService = require(script.Services.StoreService),
 	SettingsService = require(script.Services.SettingsService),
@@ -13,8 +12,8 @@ local Services = {
 }
 
 local REMOTE_NAMES = {
-	"RequestBuyCharacter",
-	"RequestEquipCharacter",
+	"RequestBuyDrifter",
+	"RequestEquipDrifter",
 	"RequestBuySkin",
 	"RequestEquipSkin",
 	"RequestSetSetting",
@@ -60,39 +59,39 @@ local function makeResult(success, message, data)
 end
 
 local function connectRemotes(remotes)
-	remotes.RequestBuyCharacter.OnServerInvoke = function(player, characterName)
-		if type(characterName) ~= "string" then
-			return makeResult(false, "Invalid character.")
+	remotes.RequestBuyDrifter.OnServerInvoke = function(player, drifterName)
+		if type(drifterName) ~= "string" then
+			return makeResult(false, "Invalid drifter.")
 		end
 
-		local success, message = Services.StoreService:BuyCharacter(player, characterName)
+		local success, message = Services.StoreService:BuyDrifter(player, drifterName)
 		return makeResult(success, message)
 	end
 
-	remotes.RequestEquipCharacter.OnServerInvoke = function(player, characterName)
-		if type(characterName) ~= "string" then
-			return makeResult(false, "Invalid character.")
+	remotes.RequestEquipDrifter.OnServerInvoke = function(player, drifterName)
+		if type(drifterName) ~= "string" then
+			return makeResult(false, "Invalid drifter.")
 		end
 
-		local success, message = Services.CharacterService:EquipCharacter(player, characterName)
+		local success, message = Services.DrifterService:EquipDrifter(player, drifterName)
 		return makeResult(success, message)
 	end
 
-	remotes.RequestBuySkin.OnServerInvoke = function(player, characterName, skinName)
-		if type(characterName) ~= "string" or type(skinName) ~= "string" then
+	remotes.RequestBuySkin.OnServerInvoke = function(player, drifterName, skinName)
+		if type(drifterName) ~= "string" or type(skinName) ~= "string" then
 			return makeResult(false, "Invalid skin.")
 		end
 
-		local success, message = Services.StoreService:BuySkin(player, characterName, skinName)
+		local success, message = Services.StoreService:BuySkin(player, drifterName, skinName)
 		return makeResult(success, message)
 	end
 
-	remotes.RequestEquipSkin.OnServerInvoke = function(player, characterName, skinName)
-		if type(characterName) ~= "string" or type(skinName) ~= "string" then
+	remotes.RequestEquipSkin.OnServerInvoke = function(player, drifterName, skinName)
+		if type(drifterName) ~= "string" or type(skinName) ~= "string" then
 			return makeResult(false, "Invalid skin.")
 		end
 
-		local success, message = Services.SkinService:EquipSkin(player, characterName, skinName)
+		local success, message = Services.SkinService:EquipSkin(player, drifterName, skinName)
 		return makeResult(success, message)
 	end
 
@@ -109,7 +108,7 @@ local function connectRemotes(remotes)
 		return makeResult(true, "Lobby data loaded.", {
 			Store = Services.StoreService:GetStoreData(player),
 			Settings = Services.SettingsService:GetSettings(player),
-			EquippedCharacter = Services.CharacterService:GetEquippedCharacter(player),
+			EquippedDrifter = Services.DrifterService:GetEquippedDrifter(player),
 			Party = Services.PartyService:GetPartyData(player),
 		})
 	end
@@ -155,7 +154,7 @@ end
 
 Services.PlayerDataService:Init()
 Services.CurrencyService:Init(Services)
-Services.CharacterService:Init(Services)
+Services.DrifterService:Init(Services)
 Services.SkinService:Init(Services)
 Services.StoreService:Init(Services)
 Services.SettingsService:Init(Services)
@@ -172,5 +171,5 @@ end
 
 connectRemotes(remotes)
 
--- Future lobby UI should call these RemoteFunctions for party, shop, skin, settings, and profile screens.
+-- Future client scripts should call these RemoteFunctions for party, shop, skin, settings, and profile screens.
 -- These are request/response handlers for the calling player, not broadcast events.

@@ -9,6 +9,16 @@ local function isPositiveNumber(amount)
 	return type(amount) == "number" and amount > 0 and amount == amount and amount < math.huge
 end
 
+local function getCurrencyDisplayName(key)
+	if key == "SeedShards" then
+		return "seed shards"
+	elseif key == "DrifterTickets" then
+		return "drifter tickets"
+	end
+
+	return string.lower(key)
+end
+
 function CurrencyService:_get(player, key)
 	return self.PlayerDataService:Get(player, key) or 0
 end
@@ -32,43 +42,59 @@ function CurrencyService:_spend(player, key, amount)
 
 	local current = self:_get(player, key)
 	if current < amount then
-		return false, "Not enough " .. key:lower() .. "."
+		return false, "Not enough " .. getCurrencyDisplayName(key) .. "."
 	end
 
 	self.PlayerDataService:Set(player, key, current - amount)
 	return true, "Currency spent."
 end
 
-function CurrencyService:GetCoins(player)
-	return self:_get(player, "Coins")
+function CurrencyService:GetCol(player)
+	return self:_get(player, "Col")
 end
 
-function CurrencyService:AddCoins(player, amount, reason)
-	return self:_add(player, "Coins", amount, reason)
+function CurrencyService:AddCol(player, amount, reason)
+	return self:_add(player, "Col", amount, reason)
 end
 
-function CurrencyService:SpendCoins(player, amount, reason)
-	return self:_spend(player, "Coins", amount, reason)
+function CurrencyService:SpendCol(player, amount, reason)
+	return self:_spend(player, "Col", amount, reason)
 end
 
-function CurrencyService:HasCoins(player, amount)
-	return isPositiveNumber(amount) and self:GetCoins(player) >= amount
+function CurrencyService:HasCol(player, amount)
+	return isPositiveNumber(amount) and self:GetCol(player) >= amount
 end
 
-function CurrencyService:GetGems(player)
-	return self:_get(player, "Gems")
+function CurrencyService:GetDrifterTickets(player)
+	return self:_get(player, "DrifterTickets")
 end
 
-function CurrencyService:AddGems(player, amount, reason)
-	return self:_add(player, "Gems", amount, reason)
+function CurrencyService:AddDrifterTickets(player, amount, reason)
+	return self:_add(player, "DrifterTickets", amount, reason)
 end
 
-function CurrencyService:SpendGems(player, amount, reason)
-	return self:_spend(player, "Gems", amount, reason)
+function CurrencyService:SpendDrifterTickets(player, amount, reason)
+	return self:_spend(player, "DrifterTickets", amount, reason)
 end
 
-function CurrencyService:HasGems(player, amount)
-	return isPositiveNumber(amount) and self:GetGems(player) >= amount
+function CurrencyService:HasDrifterTickets(player, amount)
+	return isPositiveNumber(amount) and self:GetDrifterTickets(player) >= amount
+end
+
+function CurrencyService:GetSeedShards(player)
+	return self:_get(player, "SeedShards")
+end
+
+function CurrencyService:AddSeedShards(player, amount, reason)
+	return self:_add(player, "SeedShards", amount, reason)
+end
+
+function CurrencyService:SpendSeedShards(player, amount, reason)
+	return self:_spend(player, "SeedShards", amount, reason)
+end
+
+function CurrencyService:HasSeedShards(player, amount)
+	return isPositiveNumber(amount) and self:GetSeedShards(player) >= amount
 end
 
 return CurrencyService

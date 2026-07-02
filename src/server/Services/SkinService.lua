@@ -5,44 +5,46 @@ local SkinConfig = require(ReplicatedStorage.Shared.Configs.SkinConfig)
 local SkinService = {}
 SkinService.PlayerDataService = nil
 SkinService.CurrencyService = nil
-SkinService.CharacterService = nil
+SkinService.DrifterService = nil
 
 function SkinService:Init(services)
 	self.PlayerDataService = services.PlayerDataService
 	self.CurrencyService = services.CurrencyService
-	self.CharacterService = services.CharacterService
+	self.DrifterService = services.DrifterService
 end
 
-function SkinService:OwnsSkin(player, characterName, skinName)
+function SkinService:OwnsSkin(player, drifterName, skinName)
 	local ownedSkins = self.PlayerDataService:Get(player, "OwnedSkins") or {}
-	return ownedSkins[characterName] and ownedSkins[characterName][skinName] == true
+	return ownedSkins[drifterName] and ownedSkins[drifterName][skinName] == true
 end
 
-function SkinService:BuySkin(player, characterName, skinName)
-	local characterSkins = SkinConfig[characterName]
-	local skin = characterSkins and characterSkins[skinName]
+function SkinService:BuySkin(player, drifterName, skinName)
+	local drifterSkins = SkinConfig[drifterName]
+	local skin = drifterSkins and drifterSkins[skinName]
 
 	if not skin then
 		return false, "Skin does not exist."
 	end
 
-	if not self.CharacterService:OwnsCharacter(player, characterName) then
-		return false, "You do not own this character."
+	if not self.DrifterService:OwnsDrifter(player, drifterName) then
+		return false, "You do not own this drifter."
 	end
 
-	if self:OwnsSkin(player, characterName, skinName) then
+	if self:OwnsSkin(player, drifterName, skinName) then
 		return false, "Skin already owned."
 	end
 
 	local price = skin.Price or 0
-	local currency = skin.Currency or "Coins"
+	local currency = skin.Currency or "Col"
 
 	if price > 0 then
 		local spent, message
-		if currency == "Coins" then
-			spent, message = self.CurrencyService:SpendCoins(player, price, "BuySkin:" .. characterName .. ":" .. skinName)
-		elseif currency == "Gems" then
-			spent, message = self.CurrencyService:SpendGems(player, price, "BuySkin:" .. characterName .. ":" .. skinName)
+		if currency == "Col" then
+			spent, message = self.CurrencyService:SpendCol(player, price, "BuySkin:" .. drifterName .. ":" .. skinName)
+		elseif currency == "SeedShards" then
+			spent, message = self.CurrencyService:SpendSeedShards(player, price, "BuySkin:" .. drifterName .. ":" .. skinName)
+		elseif currency == "DrifterTickets" then
+			spent, message = self.CurrencyService:SpendDrifterTickets(player, price, "BuySkin:" .. drifterName .. ":" .. skinName)
 		else
 			return false, "Invalid skin currency."
 		end
@@ -54,36 +56,36 @@ function SkinService:BuySkin(player, characterName, skinName)
 
 	self.PlayerDataService:Update(player, "OwnedSkins", function(ownedSkins)
 		ownedSkins = ownedSkins or {}
-		ownedSkins[characterName] = ownedSkins[characterName] or {}
-		ownedSkins[characterName][skinName] = true
+		ownedSkins[drifterName] = ownedSkins[drifterName] or {}
+		ownedSkins[drifterName][skinName] = true
 		return ownedSkins
 	end)
 
 	return true, "Skin purchased."
 end
 
-function SkinService:EquipSkin(player, characterName, skinName)
-	local characterSkins = SkinConfig[characterName]
-	if not characterSkins or not characterSkins[skinName] then
+function SkinService:EquipSkin(player, drifterName, skinName)
+	local drifterSkins = SkinConfig[drifterName]
+	if not drifterSkins or not drifterSkins[skinName] then
 		return false, "Skin does not exist."
 	end
 
-	if not self:OwnsSkin(player, characterName, skinName) then
+	if not self:OwnsSkin(player, drifterName, skinName) then
 		return false, "You do not own this skin."
 	end
 
 	self.PlayerDataService:Update(player, "EquippedSkins", function(equippedSkins)
 		equippedSkins = equippedSkins or {}
-		equippedSkins[characterName] = skinName
+		equippedSkins[drifterName] = skinName
 		return equippedSkins
 	end)
 
 	return true, "Skin equipped."
 end
 
-function SkinService:GetEquippedSkin(player, characterName)
+function SkinService:GetEquippedSkin(player, drifterName)
 	local equippedSkins = self.PlayerDataService:Get(player, "EquippedSkins") or {}
-	return equippedSkins[characterName]
+	return equippedSkins[drifterName]
 end
 
 return SkinService

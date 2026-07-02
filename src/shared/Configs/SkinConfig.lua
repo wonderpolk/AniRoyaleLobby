@@ -3,14 +3,14 @@ return {
 		Default = {
 			DisplayName = "Default",
 			Price = 0,
-			Currency = "Coins",
+			Currency = "Col",
 			Rarity = "Starter",
 		},
 
 		BlackLagoon = {
 			DisplayName = "Black Lagoon",
 			Price = 500,
-			Currency = "Coins",
+			Currency = "Col",
 			Rarity = "Rare",
 		},
 	},
@@ -19,7 +19,7 @@ return {
 		Default = {
 			DisplayName = "Default",
 			Price = 0,
-			Currency = "Coins",
+			Currency = "Col",
 			Rarity = "Starter",
 		},
 	},

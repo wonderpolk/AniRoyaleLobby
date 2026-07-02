@@ -1,11 +1,12 @@
 return {
 	Col = 0,
 	SeedShards = 0,
+	DrifterTickets = 0,
 
 	Level = 1,
 	XP = 0,
 
-	OwnedCharacters = {
+	OwnedDrifters = {
 		Revy = true,
 	},
 
@@ -15,7 +16,7 @@ return {
 		},
 	},
 
-	EquippedCharacter = "Revy",
+	EquippedDrifter = "Revy",
 
 	EquippedSkins = {
 		Revy = "Default",

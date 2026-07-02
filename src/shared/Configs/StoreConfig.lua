@@ -1,12 +1,12 @@
 return {
-	FeaturedCharacters = {
+	FeaturedDrifters = {
 		"Revy",
 		"Naruto",
 	},
 
 	FeaturedSkins = {
 		{
-			Character = "Revy",
+			Drifter = "Revy",
 			Skin = "BlackLagoon",
 		},
 	},

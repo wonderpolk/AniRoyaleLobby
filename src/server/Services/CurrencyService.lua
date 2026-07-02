@@ -12,6 +12,8 @@ end
 local function getCurrencyDisplayName(key)
 	if key == "SeedShards" then
 		return "seed shards"
+	elseif key == "DrifterTickets" then
+		return "drifter tickets"
 	end
 
 	return string.lower(key)
@@ -61,6 +63,22 @@ end
 
 function CurrencyService:HasCol(player, amount)
 	return isPositiveNumber(amount) and self:GetCol(player) >= amount
+end
+
+function CurrencyService:GetDrifterTickets(player)
+	return self:_get(player, "DrifterTickets")
+end
+
+function CurrencyService:AddDrifterTickets(player, amount, reason)
+	return self:_add(player, "DrifterTickets", amount, reason)
+end
+
+function CurrencyService:SpendDrifterTickets(player, amount, reason)
+	return self:_spend(player, "DrifterTickets", amount, reason)
+end
+
+function CurrencyService:HasDrifterTickets(player, amount)
+	return isPositiveNumber(amount) and self:GetDrifterTickets(player) >= amount
 end
 
 function CurrencyService:GetSeedShards(player)

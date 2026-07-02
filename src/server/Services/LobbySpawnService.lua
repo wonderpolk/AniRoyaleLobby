@@ -4,8 +4,25 @@ local Workspace = game:GetService("Workspace")
 local LobbySpawnService = {}
 LobbySpawnService.SpawnNames = { "Member1", "member1" }
 
+local function findLobbyRoom()
+	local directLobbyRoom = Workspace:FindFirstChild("LobbyRoom")
+	if directLobbyRoom then
+		return directLobbyRoom
+	end
+
+	return Workspace:FindFirstChild("LobbyRoom", true)
+end
+
 local function getLobbyRoom()
-	return Workspace:WaitForChild("LobbyRoom", 30)
+	local startTime = os.clock()
+	local lobbyRoom = findLobbyRoom()
+
+	while not lobbyRoom and os.clock() - startTime < 30 do
+		task.wait(0.25)
+		lobbyRoom = findLobbyRoom()
+	end
+
+	return lobbyRoom
 end
 
 local function findSpawnPartInLobby(lobbyRoom)
@@ -48,7 +65,18 @@ local function getSpawnPart()
 		end
 	end
 
-	return findSpawnPartInLobby(lobbyRoom)
+	spawnPart = findSpawnPartInLobby(lobbyRoom)
+	if spawnPart then
+		return spawnPart
+	end
+
+	for _, descendant in ipairs(Workspace:GetDescendants()) do
+		if descendant:IsA("BasePart") and string.lower(descendant.Name) == "member1" then
+			return descendant
+		end
+	end
+
+	return nil
 end
 
 local function freezeCharacter(character)
@@ -73,7 +101,7 @@ local function moveCharacterToLobby(character)
 
 	local spawnPart = getSpawnPart()
 	if not spawnPart then
-		warn("LobbySpawnService could not find Workspace.LobbyRoom.Member1.")
+		warn("LobbySpawnService could not find a Member1 spawn part in Workspace.")
 		return
 	end
 

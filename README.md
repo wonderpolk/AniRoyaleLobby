@@ -60,10 +60,10 @@ ReplicatedStorage
 
 ## Studio Lobby Room Setup
 
-Create these parts in Studio under `Workspace.LobbyRoom`:
+Create these parts in Studio under `Workspace.LobbyRoom` when possible:
 
 - `LobbyCamera`: a part placed where the lobby camera should look from. The client locks the camera to this part while the player is in the lobby.
-- `Member1`: a part placed where the first lobby player should stand. The server moves players to this part and freezes their movement for the lobby view.
+- `Member1`: a part placed where the first lobby player should stand. The server moves players to this part and freezes their movement for the lobby view. The spawn service can also find a nested `LobbyRoom`/`Member1` inside Workspace, but direct placement under `Workspace.LobbyRoom` is the cleanest setup.
 
 If `LobbyCamera` contains a `StringValue` named `CamPart`, the client will try to use the part named by that value first. If it cannot find that named part, it uses `LobbyCamera` itself.
 

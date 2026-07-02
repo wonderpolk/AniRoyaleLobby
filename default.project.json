@@ -20,6 +20,16 @@
         "$path": "src/server",
         "$ignoreUnknownInstances": true
       }
+    },
+    "StarterPlayer": {
+      "$ignoreUnknownInstances": true,
+      "StarterPlayerScripts": {
+        "$ignoreUnknownInstances": true,
+        "Client": {
+          "$path": "src/client",
+          "$ignoreUnknownInstances": true
+        }
+      }
     }
   }
 }

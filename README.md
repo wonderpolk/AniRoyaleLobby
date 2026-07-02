@@ -7,6 +7,7 @@ Lobby-only Roblox foundation for Ani Royale. In this project, "lobby" means the 
 - Modular server services for player data, currency, store purchases, character ownership, skin ownership, settings, party invites, and profile stats for the lobby hub.
 - Shared configs for starter data, characters, skins, store placement, party size, and allowed settings.
 - Safe `RemoteFunction` setup under `ReplicatedStorage.Shared.Remotes` for request/response lobby actions, not server broadcasts.
+- Temporary black main menu placeholder with a loading assets bar and Play button.
 - Rojo mapping that preserves unknown Studio instances while syncing source-controlled lobby folders.
 - Wally dependency entry for `DataService`, kept behind `PlayerDataService` so the data layer can be swapped later.
 
@@ -25,6 +26,11 @@ ServerScriptService
         ├── SettingsService.lua
         ├── StatsService.lua
         └── PartyService.lua
+
+StarterPlayer
+└── StarterPlayerScripts
+    └── Client
+        └── MainMenu.client.lua
 
 ReplicatedStorage
 ├── Packages

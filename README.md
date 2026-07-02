@@ -8,6 +8,7 @@ Lobby-only Roblox foundation for Ani Royale. In this project, "lobby" means the 
 - Shared configs for starter data, drifters, skins, store placement, party size, and allowed settings.
 - Safe `RemoteFunction` setup under `ReplicatedStorage.Shared.Remotes` for request/response lobby actions, not server broadcasts.
 - Temporary black main menu placeholder with a loading assets bar and Play button.
+- Lobby camera and fixed lobby spawn support for the Studio `Workspace.LobbyRoom` setup.
 - Rojo mapping that preserves unknown Studio instances while syncing source-controlled lobby folders.
 - Wally dependency entry for `DataService`, kept behind `PlayerDataService` so the data layer can be swapped later.
 
@@ -25,12 +26,14 @@ ServerScriptService
         ├── SkinService.lua
         ├── SettingsService.lua
         ├── StatsService.lua
-        └── PartyService.lua
+        ├── PartyService.lua
+        └── LobbySpawnService.lua
 
 StarterPlayer
 └── StarterPlayerScripts
     └── Client
-        └── MainMenu.client.lua
+        ├── MainMenu.client.lua
+        └── LobbyCamera.client.lua
 
 ReplicatedStorage
 ├── Packages
@@ -54,6 +57,15 @@ ReplicatedStorage
 4. Run `rojo serve` from this repository.
 5. Open Roblox Studio, open the Rojo plugin, and connect to the running Rojo server.
 6. Sync safely: the project uses Rojo `$ignoreUnknownInstances` settings so existing Studio-only instances are preserved while lobby code is added.
+
+## Studio Lobby Room Setup
+
+Create these parts in Studio under `Workspace.LobbyRoom`:
+
+- `LobbyCamera`: a part placed where the lobby camera should look from. The client locks the camera to this part while the player is in the lobby.
+- `Member1`: a part placed where the first lobby player should stand. The server moves players to this part and freezes their movement for the lobby view.
+
+If `LobbyCamera` contains a `StringValue` named `CamPart`, the client will try to use the part named by that value first. If it cannot find that named part, it uses `LobbyCamera` itself.
 
 ## Future Client Remote Access
 

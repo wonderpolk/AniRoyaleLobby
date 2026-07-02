@@ -9,6 +9,7 @@ local Services = {
 	SettingsService = require(script.Services.SettingsService),
 	StatsService = require(script.Services.StatsService),
 	PartyService = require(script.Services.PartyService),
+	LobbySpawnService = require(script.Services.LobbySpawnService),
 }
 
 local REMOTE_NAMES = {
@@ -160,6 +161,7 @@ Services.StoreService:Init(Services)
 Services.SettingsService:Init(Services)
 Services.StatsService:Init(Services)
 Services.PartyService:Init(Services)
+Services.LobbySpawnService:Init()
 
 local shared = ReplicatedStorage:WaitForChild("Shared")
 local remotesFolder = getOrCreateFolder(shared, "Remotes")

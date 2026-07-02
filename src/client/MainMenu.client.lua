@@ -4,6 +4,34 @@ local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
+
+local function destroyScreenGui(instance)
+	local current = instance
+	while current and current ~= playerGui do
+		if current:IsA("ScreenGui") then
+			current:Destroy()
+			return
+		end
+
+		current = current.Parent
+	end
+end
+
+local function removeOldLobbyStatusGui()
+	local oldLobbyHud = playerGui:FindFirstChild("LobbyHud")
+	if oldLobbyHud then
+		oldLobbyHud:Destroy()
+	end
+
+	for _, descendant in ipairs(playerGui:GetDescendants()) do
+		if descendant:IsA("TextLabel") then
+			if descendant.Text == "Waiting for lobby data..." or string.find(descendant.Text, "Players:") then
+				destroyScreenGui(descendant)
+			end
+		end
+	end
+end
+
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "MainMenu"
 screenGui.IgnoreGuiInset = true
@@ -93,5 +121,8 @@ loadingTween.Completed:Connect(finishLoading)
 loadingTween:Play()
 
 playButton.Activated:Connect(function()
+	removeOldLobbyStatusGui()
+	task.defer(removeOldLobbyStatusGui)
+	task.delay(0.5, removeOldLobbyStatusGui)
 	screenGui.Enabled = false
 end)

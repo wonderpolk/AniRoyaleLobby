@@ -1,6 +1,8 @@
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
+local LOBBY_SPAWN_LOCATION_NAME = "LobbySpawnLocation"
+
 local LobbySpawnService = {}
 LobbySpawnService.SpawnNames = { "Member1", "member1", "SlotOne", "slotone", "Slot1", "slot1" }
 
@@ -91,6 +93,43 @@ local function getSpawnPart()
 	return nil
 end
 
+local function getOrCreateSpawnLocation()
+	local spawnPart = getSpawnPart()
+	if not spawnPart then
+		return nil
+	end
+
+	local parent = spawnPart.Parent or Workspace
+	local spawnLocation = parent:FindFirstChild(LOBBY_SPAWN_LOCATION_NAME)
+
+	if not spawnLocation then
+		spawnLocation = Instance.new("SpawnLocation")
+		spawnLocation.Name = LOBBY_SPAWN_LOCATION_NAME
+		spawnLocation.Parent = parent
+	end
+
+	spawnLocation.Anchored = true
+	spawnLocation.CanCollide = false
+	spawnLocation.Transparency = 1
+	spawnLocation.Enabled = true
+	spawnLocation.Neutral = true
+	spawnLocation.Duration = 0
+	spawnLocation.Size = Vector3.new(4, 1, 4)
+	spawnLocation.CFrame = spawnPart.CFrame
+
+	return spawnLocation
+end
+
+local function assignRespawnLocation(player)
+	local spawnLocation = getOrCreateSpawnLocation()
+	if not spawnLocation then
+		warn("LobbySpawnService could not create a lobby SpawnLocation.")
+		return
+	end
+
+	player.RespawnLocation = spawnLocation
+end
+
 local function freezeCharacter(character)
 	local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 10)
 	if not humanoid then
@@ -143,11 +182,17 @@ function LobbySpawnService:_setupCharacter(character)
 end
 
 function LobbySpawnService:_setupPlayer(player)
+	task.spawn(function()
+		assignRespawnLocation(player)
+	end)
+
 	player.CharacterAdded:Connect(function(character)
+		assignRespawnLocation(player)
 		self:_setupCharacter(character)
 	end)
 
 	if player.Character then
+		assignRespawnLocation(player)
 		self:_setupCharacter(player.Character)
 	end
 end
